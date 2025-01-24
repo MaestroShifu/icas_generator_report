@@ -2,7 +2,7 @@ import { FC } from "react"
 import DetailsProviderStyled from "./DetailsProvider.styled"
 import { Provider, TripNormalize } from "../../types"
 import { Button, CardContent, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import { normalizeTrips, numberToFormatCOP } from "../../utils"
+import { formatOriginText, normalizeTrips, numberToFormatCOP } from "../../utils"
 import { Print } from "@mui/icons-material"
 
 type DetailsProviderProps = {
@@ -21,7 +21,7 @@ const DetailsProvider: FC<DetailsProviderProps> = ({ provider, handlePrintPDF })
             <TableCell component="th" scope="row">
                 { idx + 1 }
             </TableCell>
-            <TableCell align="right">{trip.origin}</TableCell>
+            <TableCell align="right">{ formatOriginText(trip.origin) }</TableCell>
             <TableCell align="right">{ numberToFormatCOP(trip.amount) }</TableCell>
             <TableCell align="right">{ numberToFormatCOP(trip.RETE_ICA) }</TableCell>
             <TableCell align="right">{ numberToFormatCOP(trip.RETE_FTE) }</TableCell>

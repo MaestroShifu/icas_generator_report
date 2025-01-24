@@ -1,16 +1,13 @@
 import { createGlobalStyle } from "styled-components";
 
-const GlobalStyle = createGlobalStyle`
-    :root {
+const GlobalStyle = createGlobalStyle`    
+    html, body, #root {
         line-height: 1.5;
         font-weight: 400;
-        /* color-scheme: light dark;
-        color: rgba(255, 255, 255, 0.87);
-        background-color: #242424; */
-    }
-
-    body {
+        height: 100%;
         margin: 0;
+        display: flex;
+        flex-direction: column;
     }
 `
 
