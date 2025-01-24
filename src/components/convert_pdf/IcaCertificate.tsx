@@ -77,7 +77,9 @@ const IcaCertificate: FC<IcaCertificateProps> = ({ provider }) =>  {
 
         <Typography variant="body1" component="div">
           { `Certifica que durante el año gravable de ${year} se distribuyó a la compañía `} 
-          <span className='text-bold'> {provider.name} </span> 
+          <span className='text-bold'> {provider.name} </span>
+          { `identificado con NIT. ` }
+          <span className='text-bold'> {provider.dni} </span>
           { `por concepto de retención en la fuente a título de renta según art 102-2 del ET y que el valor retenido a título de Ica se distribuyó en la tesorería municipal de:`} 
         </Typography>
 
