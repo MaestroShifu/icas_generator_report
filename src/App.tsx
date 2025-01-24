@@ -1,3 +1,4 @@
+import ReactDOM from "react-dom";
 import { ChangeEvent, useRef, useState } from 'react'
 import DetailsProvider from './components/details_provider/DetailsProvider';
 import { Provider, ProvidersData } from './types';
@@ -5,6 +6,8 @@ import { loadExcelFile } from './services/ServiceProviders';
 import { Autocomplete, Button, TextField, Typography } from '@mui/material';
 import { Print, Upload } from '@mui/icons-material';
 import { FileUpdateStyle, SelectProviderStyled } from './App.styled';
+import html2pdf from 'html2pdf.js';
+import HtmlToPdf from "./convert_pdf/HtmlToPdf";
 
 const App = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,6 +61,20 @@ const App = () => {
   }
 
   const generatePDF = (provider: Provider) => {
+    const container = document.createElement('div');
+    container.style.display = 'none'; // Ocultar el contenedor para que no afecte la interfaz
+    document.body.appendChild(container);
+
+    const element = (<HtmlToPdf provider={provider}/>);
+
+    ReactDOM.render(element, container, () => {
+      // Callback ejecutado cuando el componente se ha renderizado
+      const content = document.getElementById(`content-to-pdf`);
+      if (content) {
+        html2pdf().from(content).save(`newDocument.pdf`);
+      }
+      document.body.removeChild(container); // Limpiar el DOM
+    });
     console.log(`Esta imprimiendo ${provider.name}`)
   }
 
