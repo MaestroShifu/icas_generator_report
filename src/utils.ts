@@ -44,6 +44,7 @@ export const normalizeTrips = (trips: Array<Trips>): TripNormalize => {
   return trips.reduce<TripNormalize>((prev, curr) => {
     if (!prev[curr.origin]) {
         prev[curr.origin] = { ...curr }
+        return prev
     }
     prev[curr.origin].RETE_FTE += curr.RETE_FTE;
     prev[curr.origin].RETE_ICA += curr.RETE_ICA;
