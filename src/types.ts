@@ -9,8 +9,20 @@ export type Provider = {
 }
 
 export type Trips = {
+  date: string
+  license_plate: string
   origin: string
+  remittance: number
+/*   d_discount: number */
   amount: number
   RETE_FTE: number
   RETE_ICA: number
+/*   completed: number */
+  owner: string
+  driver: string
+  destiny: string
+  STAND_BY: number
+  advance: number
+  CXP: number
+  payment_date: string
 }

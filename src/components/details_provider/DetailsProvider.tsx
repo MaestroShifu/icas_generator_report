@@ -12,7 +12,6 @@ type DetailsProviderProps = {
 
 const DetailsProvider: FC<DetailsProviderProps> = ({ provider, handlePrintPDF }) => {
     const tripsNomalize: TripNormalize = normalizeTrips(provider.trips)
-
     const rows = Object.values(tripsNomalize).map((trip, idx) => (
         <TableRow
             key={`${provider.name}_${idx}`}

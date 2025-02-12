@@ -14,15 +14,25 @@ import * as XLSX from 'xlsx';
 // Filtro por nombre hay 13
 
 // Constants names
+const FECHA = "FECHA"
+const PLACA = "PLACA"
 const ORIGEN = "ORIGEN"
+const REMESA = "REMESA"
 const PROPIETARIO = "PROPIETARIO"
 const DOCUMENTO_PROP = "DOCUMENTO_PROP"
+/* const DESCUENTO_DESCARGUE = "DESCUENTO_DESCARGUE" */
 const RETE_FTE = "RETE_FTE"
 const RETE_ICA = "RETE_ICA"
 const VALOR_FLETE = "VALOR_FLETE"
-
-const SHEET_TITLE: Array<string> = [ORIGEN, PROPIETARIO, DOCUMENTO_PROP, RETE_FTE, RETE_ICA, VALOR_FLETE]
-
+const CONDUCTOR = "CONDUCTOR"
+const DESTINO = "DESTINO"
+const ANTICIPO = "ANTICIPO"
+/* const CUMPLIDO = "CUMPLIDO" */
+const CXP = "CXP"
+const STAND_BY = "STAND_BY"
+/* const F_CUMPLIDO = "F_CUMPLIDO" */
+const FECHA_DE_PAGO = "FECHA_DE_PAGO"
+const SHEET_TITLE: Array<string> = [FECHA, PLACA, ORIGEN, REMESA, PROPIETARIO, DOCUMENTO_PROP, RETE_FTE, RETE_ICA, VALOR_FLETE, CONDUCTOR, DESTINO, ANTICIPO, CXP, FECHA_DE_PAGO]
 const validateMissingKeys = (keys: Array<string>): Array<string> => {
   const isValidKeys: Record<string, boolean> = SHEET_TITLE.reduce((prev, curr) => {
     return {
@@ -53,12 +63,23 @@ const sheetDataParseToGeneralData = (sheetData: unknown[]): ProvidersData => {
         trips: []
       }
     }
-      
     generalData[dni].trips.push({ 
+      date: data[FECHA],
+      STAND_BY: fixingNumberParsing(data[STAND_BY]),
+      license_plate: String(data[PLACA]).trim().replace(/\s+/g, "_"),
+      remittance: Number(data[REMESA]),
+  /*     d_discount: Number(data[DESCUENTO_DESCARGUE]), */
       origin: String(data[ORIGEN]).trim().replace(/\s+/g, "_"), 
       RETE_FTE: fixingNumberParsing(data[RETE_FTE]), 
       RETE_ICA: fixingNumberParsing(data[RETE_ICA]),
-      amount: fixingNumberParsing(data[VALOR_FLETE])
+      amount: fixingNumberParsing(data[VALOR_FLETE]),
+      owner: String(data[PROPIETARIO]).trim().replace(/\s+/g, "_"),
+      driver: String(data[CONDUCTOR]).trim().replace(/\s+/g, "_"),
+      destiny: String(data[DESTINO]).trim().replace(/\s+/g, "_"),
+/*       completed: Number(data[CUMPLIDO]), */
+      advance: fixingNumberParsing(data[ANTICIPO]),
+      CXP: fixingNumberParsing(data[CXP]),
+      payment_date: data[FECHA_DE_PAGO]
     })
   }) 
   return generalData
@@ -87,6 +108,7 @@ export const loadExcelFile = async (file: File): Promise<ProvidersData> => {
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
 
+
     const sheetData = XLSX.utils.sheet_to_json(sheet, { raw: true }).map((row: any) => {
       const cleanedRow: any = {};
       for (const key in row) {
@@ -95,6 +117,7 @@ export const loadExcelFile = async (file: File): Promise<ProvidersData> => {
       }
       return cleanedRow;
     });
+
 
     const keys = Object.keys(sheetData[0] as any).map((key) => key.trim());
     const missingKeys = validateMissingKeys(keys);
