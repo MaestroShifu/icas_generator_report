@@ -1,31 +1,39 @@
-import { FC } from "react"
+import { FC, useEffect, useState } from "react"
 import DetailsProviderStyled from "./DetailsProvider.styled"
-import { Provider, TripNormalize } from "../../types"
-import { Button, CardContent, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import { formatOriginText, normalizeTrips, numberToFormatCOP } from "../../utils"
+import { Provider } from "../../types"
+import { Button, CardContent, Paper, TableContainer, Typography } from "@mui/material"
 import { Print } from "@mui/icons-material"
+import DetailsCertificate from "./Selection/DetailsCertificate"
+import DetailsSettlement from "./Selection/DetailsSettlement"
 
 type DetailsProviderProps = {
     provider: Provider
     handlePrintPDF: (dni: string) => void
+    selectedOption: (Selection: string) => void
 }
 
-const DetailsProvider: FC<DetailsProviderProps> = ({ provider, handlePrintPDF }) => {
-    const tripsNomalize: TripNormalize = normalizeTrips(provider.trips)
-    const rows = Object.values(tripsNomalize).map((trip, idx) => (
-        <TableRow
-            key={`${provider.name}_${idx}`}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-        >
-            <TableCell component="th" scope="row">
-                { idx + 1 }
-            </TableCell>
-            <TableCell align="right">{ formatOriginText(trip.origin) }</TableCell>
-            <TableCell align="right">{ numberToFormatCOP(trip.amount) }</TableCell>
-            <TableCell align="right">{ numberToFormatCOP(trip.RETE_ICA) }</TableCell>
-            <TableCell align="right">{ numberToFormatCOP(trip.RETE_FTE) }</TableCell>
-        </TableRow>
-    ))
+
+const DetailsProvider: FC<DetailsProviderProps> = ({ provider, handlePrintPDF, selectedOption}) => {
+
+    const [selection, setSelection] = useState<string>("")
+
+    useEffect(() => {
+        selectedOption(selection);
+    }, [selection, selectedOption])
+
+    const RenderTable = () => {
+        if (selection == "Certificado"){
+            return <DetailsCertificate provider={provider}/>
+        }
+        if (selection == "Liquidaciones"){
+            return<DetailsSettlement provider={provider}/>
+        }
+        else{
+            return<Typography variant="body1" className="noneData">no se ha seleccionado el tipo de documento</Typography>
+        }
+    }
+
+    
 
     return (
         <DetailsProviderStyled>
@@ -38,15 +46,19 @@ const DetailsProvider: FC<DetailsProviderProps> = ({ provider, handlePrintPDF })
                             </Typography>
                             <Typography variant="body1">
                                 { provider.name }
-                            </Typography>   
-                        </div>
-                        <div className="field">
+                            </Typography>
                             <Typography variant="body1" className="title">
                                 Documento:
                             </Typography>
                             <Typography variant="body1">
                                 { provider.dni }
-                            </Typography>   
+                            </Typography>
+                        </div>
+                        <div className="field">
+                            <div className="buttons">
+                                <Button className="button" variant="outlined" value="Certificado" disabled={selection == "Certificado"} onClick={(event) => setSelection(event.currentTarget.value)}>Certificado ICA</Button>
+                                <Button className="button" variant="outlined" value="Liquidaciones" disabled={selection == "Liquidaciones"} onClick={(event) => setSelection(event.currentTarget.value)}>Liquidaciones</Button>
+                            </div>   
                         </div>
                     </div>
 
@@ -63,21 +75,7 @@ const DetailsProvider: FC<DetailsProviderProps> = ({ provider, handlePrintPDF })
                 </div>
 
                 <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>#</TableCell>
-                                <TableCell align="right">Origen</TableCell>
-                                <TableCell align="right">Base</TableCell>
-                                <TableCell align="right">Rete ICA</TableCell>
-                                <TableCell align="right">Rete Fuente</TableCell>
-                            </TableRow>
-                        </TableHead>
-
-                        <TableBody>
-                            { rows }
-                        </TableBody>
-                    </Table>
+                    {RenderTable()}
                 </TableContainer>
 
                 <div className="container-actions">

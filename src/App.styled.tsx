@@ -9,9 +9,6 @@ export const FileUpdateStyle = styled.div`
     .title { 
         font-weight: bold;
     }
-    .simple-select{
-        max-width: 40%; 
-    }
 `;
 
 export const SelectProviderStyled = styled.div`

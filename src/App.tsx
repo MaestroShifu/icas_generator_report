@@ -3,11 +3,11 @@ import ReactDOMServer from "react-dom/server";
 import ReactDOM from "react-dom/client";
 import DetailsProvider from './components/details_provider/DetailsProvider';
 import IcaCertificate from './components/convert_pdf/IcaCertificate';
-import { Provider, ProvidersData, TripNormalize } from './types';
+import { Provider, ProvidersData  } from './types';
 import { loadExcelFile } from './services/ServiceProviders';
-import { Autocomplete, Button, TextField, Typography, Select, InputLabel, FormControl, MenuItem } from '@mui/material';
+import { Autocomplete, Button, TextField, Typography } from '@mui/material';
 import { Print, Upload } from '@mui/icons-material';
-import { normalizeTrips } from './utils';
+import { allTrips } from './utils';
 import { FileUpdateStyle, SelectProviderStyled } from './App.styled';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -16,10 +16,10 @@ import Settlement from './components/settlement_pdf/Settlement';
 const App = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [selection, setSelection] = useState("")
   const [fileName, setFileName] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
   const [providersData, setProvidersData] = useState<ProvidersData>({})
+  const [selectedOption, setSelectedOption] = useState("")
 
   const [dataDNISelected, setDataDNISelected] = useState<Array<string>>([])
    
@@ -69,6 +69,7 @@ const App = () => {
 
   const generatePDF = async (provider: Provider) => {
 
+
     const pdf = new jsPDF("p", "mm", "a4");
 
     // Crear un div temporal donde renderizar el componente Settlement
@@ -86,18 +87,16 @@ const App = () => {
     tempDiv.style.position = "absolute";
     tempDiv.style.top = "-9999px"; // Mantenerlo fuera de la vista del usuario
     document.body.appendChild(tempDiv);
-  
-    if(selection == "liquidaciones"){
+    if(selectedOption == "Liquidaciones"){
       
   
     // Renderiza el componente Settlement dentro del div temporal
     const root = ReactDOM.createRoot(tempDiv)
     root.render(<Settlement provider={provider} />);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     
-    const tripsNomalize: TripNormalize = normalizeTrips(provider.trips)
-    const trips = Object.values(tripsNomalize);
+    const trips = Object.values(allTrips(provider.trips));
     
     try {
  // Obtener los viajes
@@ -126,7 +125,7 @@ const App = () => {
     }
     }
     // Renderiza el componente a un string de HTML usando ReactDOMServer
-    if (selection == "certificado"){
+    if (selectedOption == "Certificado"){
       const htmlString = ReactDOMServer.renderToStaticMarkup(
         <IcaCertificate provider={provider} />
       );
@@ -151,12 +150,12 @@ const App = () => {
         document.body.removeChild(tempDiv);
       }
     }
-    if (selection == "") {
+    if (selectedOption == "") {
       alert("Elige la opcion que desea imprimir")
     }
   }
 
-  const providerSelected = dataDNISelected.map(dni => (<DetailsProvider key={dni} handlePrintPDF={handlePrintPDFByDNI} provider={providersData[dni]} />))
+  const providerSelected = dataDNISelected.map(dni => (<DetailsProvider key={dni} handlePrintPDF={handlePrintPDFByDNI} provider={providersData[dni] } selectedOption={setSelectedOption}/>))
 
   return (
     <>
@@ -179,19 +178,6 @@ const App = () => {
         <Button variant="outlined" disabled={Object.values(providersData).length === 0} startIcon={<Print />} onClick={handleGenerateAllPdf}>
           Generate All PDF
         </Button>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Selection</InputLabel>
-            <Select
-            labelId="demo-simple-select-label"
-            className="simple-select"
-            label="Selection"
-            value={selection}
-            onChange={(e) => setSelection(e.target.value)}
-            >
-              <MenuItem value="certificado">Certificado ICA</MenuItem>
-              <MenuItem value="liquidaciones">Liquidaciones</MenuItem>
-            </Select>
-        </FormControl>
       </FileUpdateStyle>
 
       <SelectProviderStyled>

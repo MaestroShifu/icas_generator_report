@@ -20,19 +20,19 @@ const ORIGEN = "ORIGEN"
 const REMESA = "REMESA"
 const PROPIETARIO = "PROPIETARIO"
 const DOCUMENTO_PROP = "DOCUMENTO_PROP"
-/* const DESCUENTO_DESCARGUE = "DESCUENTO_DESCARGUE" */
+const DESCUENTO_DESCARGUE = "DESCUENTO_DESCARGUE"
 const RETE_FTE = "RETE_FTE"
 const RETE_ICA = "RETE_ICA"
 const VALOR_FLETE = "VALOR_FLETE"
 const CONDUCTOR = "CONDUCTOR"
+const PTO_PAGO = "PTO_PAGO"
 const DESTINO = "DESTINO"
 const ANTICIPO = "ANTICIPO"
-/* const CUMPLIDO = "CUMPLIDO" */
+const F_CUMPLIDO = "F_CUMPLIDO"
 const CXP = "CXP"
 const STAND_BY = "STAND_BY"
-/* const F_CUMPLIDO = "F_CUMPLIDO" */
 const FECHA_DE_PAGO = "FECHA_DE_PAGO"
-const SHEET_TITLE: Array<string> = [FECHA, PLACA, ORIGEN, REMESA, PROPIETARIO, DOCUMENTO_PROP, RETE_FTE, RETE_ICA, VALOR_FLETE, CONDUCTOR, DESTINO, ANTICIPO, CXP, FECHA_DE_PAGO]
+const SHEET_TITLE: Array<string> = [FECHA, PLACA, ORIGEN, REMESA, F_CUMPLIDO, DESCUENTO_DESCARGUE, PROPIETARIO, PTO_PAGO, DOCUMENTO_PROP, RETE_FTE, RETE_ICA, VALOR_FLETE, CONDUCTOR, DESTINO, ANTICIPO, CXP, FECHA_DE_PAGO]
 const validateMissingKeys = (keys: Array<string>): Array<string> => {
   const isValidKeys: Record<string, boolean> = SHEET_TITLE.reduce((prev, curr) => {
     return {
@@ -68,7 +68,7 @@ const sheetDataParseToGeneralData = (sheetData: unknown[]): ProvidersData => {
       STAND_BY: fixingNumberParsing(data[STAND_BY]),
       license_plate: String(data[PLACA]).trim().replace(/\s+/g, "_"),
       remittance: Number(data[REMESA]),
-  /*     d_discount: Number(data[DESCUENTO_DESCARGUE]), */
+      d_discount: fixingNumberParsing(data[DESCUENTO_DESCARGUE]),
       origin: String(data[ORIGEN]).trim().replace(/\s+/g, "_"), 
       RETE_FTE: fixingNumberParsing(data[RETE_FTE]), 
       RETE_ICA: fixingNumberParsing(data[RETE_ICA]),
@@ -76,7 +76,8 @@ const sheetDataParseToGeneralData = (sheetData: unknown[]): ProvidersData => {
       owner: String(data[PROPIETARIO]).trim().replace(/\s+/g, "_"),
       driver: String(data[CONDUCTOR]).trim().replace(/\s+/g, "_"),
       destiny: String(data[DESTINO]).trim().replace(/\s+/g, "_"),
-/*       completed: Number(data[CUMPLIDO]), */
+      completed_date: data[F_CUMPLIDO],
+      p_payment: fixingNumberParsing(data[PTO_PAGO]),
       advance: fixingNumberParsing(data[ANTICIPO]),
       CXP: fixingNumberParsing(data[CXP]),
       payment_date: data[FECHA_DE_PAGO]
@@ -84,7 +85,6 @@ const sheetDataParseToGeneralData = (sheetData: unknown[]): ProvidersData => {
   }) 
   return generalData
 }
-
 export const loadExcelFile = async (file: File): Promise<ProvidersData> => {
   try {
     const binaryString = await new Promise<string>((resolve, reject) => {
@@ -107,7 +107,6 @@ export const loadExcelFile = async (file: File): Promise<ProvidersData> => {
 
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
-
 
     const sheetData = XLSX.utils.sheet_to_json(sheet, { raw: true }).map((row: any) => {
       const cleanedRow: any = {};

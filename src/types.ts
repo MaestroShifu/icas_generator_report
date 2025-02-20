@@ -2,6 +2,8 @@ export type ProvidersData = Record<string, Provider>
 
 export type TripNormalize = Record<string, Trips>
 
+export type allTrip = Record<string, Trips>
+
 export type Provider = {
   name: string
   dni: string
@@ -13,11 +15,12 @@ export type Trips = {
   license_plate: string
   origin: string
   remittance: number
-/*   d_discount: number */
+  d_discount: number
+  p_payment: number
   amount: number
   RETE_FTE: number
   RETE_ICA: number
-/*   completed: number */
+  completed_date: string
   owner: string
   driver: string
   destiny: string
@@ -26,3 +29,5 @@ export type Trips = {
   CXP: number
   payment_date: string
 }
+
+//pto pago == pronto pago

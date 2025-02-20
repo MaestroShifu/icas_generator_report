@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { Typography } from '@mui/material';
-import { Provider, TripNormalize} from '../../types';
+import { Provider } from '../../types';
 import logo from '../../assets/logo.png'
 import SettlementStyled from './Settlement.styled';
-import { excelDateToJSDate, formatOriginText, normalizeTrips, numberToFormatCOP } from '../../utils';
+import { allTrips, excelDateToJSDate, formatOriginText, numberToFormatCOP } from '../../utils';
 
 type SettlementProps = {
     provider: Provider
@@ -19,13 +19,9 @@ const ENTERPRISE_ADDRESS = "Cra 57ª No. 5ª – 16"
 
 
 const Settlement: FC<SettlementProps> = ({ provider }) => {
-
-    
-    const tripsNomalize: TripNormalize = normalizeTrips(provider.trips)
-
     return(
     <SettlementStyled>
-      {Object.values(tripsNomalize).map((trip, idx) => (
+      {Object.values(allTrips(provider.trips)).map((trip, idx) => (
       <div key={`${provider.name}_${idx}`} id={`trip_${idx}`} className='settlement-container'>
         <div className="header-settlement">
           <img src={logo} />
@@ -132,7 +128,15 @@ const Settlement: FC<SettlementProps> = ({ provider }) => {
                   DTO DESCARGUE
                 </Typography>
                 <Typography variant="body1" component="td">
-                  {numberToFormatCOP(0)}
+                  {numberToFormatCOP(trip.d_discount)}
+                </Typography>
+              </tr>
+              <tr>
+                <Typography variant="body1" component="th">
+                  PRONTO PAGO
+                </Typography>
+                <Typography variant="body1" component="td">
+                  {numberToFormatCOP(trip.p_payment)}
                 </Typography>
               </tr>
               <tr>
@@ -172,7 +176,7 @@ const Settlement: FC<SettlementProps> = ({ provider }) => {
               </tr>
               <tr key={`${provider.name}_${idx}`}> 
                 <Typography variant="body1" component="th">
-                  { formatOriginText("FECHA DE PAGO") }
+                  FECHA DE PAGO
                 </Typography>
                 <Typography variant="body1" component="td">
                   { excelDateToJSDate(trip.payment_date) }
@@ -180,10 +184,10 @@ const Settlement: FC<SettlementProps> = ({ provider }) => {
               </tr>
               <tr key={`${provider.name}_${idx}`}> 
                 <Typography variant="body1" component="th">
-                  { formatOriginText("CUMPLIDO") }
+                  FECHA DE CUMPLIDO
                 </Typography>
                 <Typography variant="body1" component="td">
-                  12345
+                  { excelDateToJSDate(trip.completed_date) }
                 </Typography>
               </tr>
             </tbody>

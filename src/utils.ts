@@ -52,3 +52,7 @@ export const normalizeTrips = (trips: Array<Trips>): TripNormalize => {
     return prev
   }, {})
 }
+
+export const allTrips = (trips: Array<Trips>)=> {
+  return trips
+}

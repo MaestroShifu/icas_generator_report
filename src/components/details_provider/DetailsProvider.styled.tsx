@@ -4,7 +4,7 @@ import styled from "styled-components";
 const DetailsProviderStyled = styled(Card)`
     && {
         background-color: #1e1e1e;
-        max-width: 750px;
+        max-width: 800px;
         color: #9097a0;
     }
 
@@ -22,6 +22,15 @@ const DetailsProviderStyled = styled(Card)`
             .field {
                 display: flex;
                 flex: 1;
+                
+                .buttons {
+                    margin-left: 60px;
+                    
+                    .button{
+                        color: #f0f8ff;
+                        margin-right: 2px;
+                    }
+                }
     
                 .title {
                     color: #f0f8ff;
@@ -34,6 +43,11 @@ const DetailsProviderStyled = styled(Card)`
 
     .container-actions {
         margin-top: 20px;
+    }
+    .noneData {
+        background-color: #1e1e1e;
+        color: #e6e6e6;
+        text-align: center;
     }
 
     table {
